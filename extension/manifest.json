@@ -3,7 +3,7 @@
   "name": "PageToPDF — Full Page Screenshot & PDF",
   "short_name": "PageToPDF",
   "version": "1.0.0",
-  "description": "Capture an entire web page as a high-resolution PNG or a searchable PDF with smart page breaks, links and optional background removal. Free & open source.",
+  "description": "Save a full web page as a searchable PDF or high-res PNG with smart page breaks, links and background removal. Free & open source.",
   "minimum_chrome_version": "116",
   "icons": {
     "16": "icons/icon16.png",

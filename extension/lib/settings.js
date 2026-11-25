@@ -37,7 +37,7 @@ export const DEFAULTS = {
   // PDF
   paperSize: 'letter',
   orientation: 'portrait', // portrait | landscape
-  marginMm: 0,
+  marginMm: 6,
   smartSplit: true,
   pdfHeader: false,        // title + capture date/time (off by default)
   pdfFooter: false,        // URL + page numbers (off by default)
