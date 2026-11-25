@@ -1,0 +1,7 @@
+node_modules/
+test/out/
+test/.profile*/
+dist/
+.DS_Store
+test/.build*/
+.claude/

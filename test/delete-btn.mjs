@@ -1,0 +1,28 @@
+// Viewer top-bar Delete button: confirm dialog guards it.
+import { chromium } from 'playwright';
+import fs from 'fs'; import path from 'path'; import http from 'http';
+const tmp = path.join(process.argv[2] || 'test/out', `keep-${Date.now()}`);
+const ext = path.join(tmp, 'ext');
+fs.mkdirSync(tmp, { recursive: true });
+fs.cpSync('extension', ext, { recursive: true });
+const mf = JSON.parse(fs.readFileSync(path.join(ext, 'manifest.json'))); mf.host_permissions = ['<all_urls>']; fs.writeFileSync(path.join(ext, 'manifest.json'), JSON.stringify(mf));
+const server = http.createServer((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); fs.createReadStream('test/fixtures/long.html').pipe(r); });
+await new Promise(r => server.listen(0, r)); const url = `http://127.0.0.1:${server.address().port}/long.html`;
+const ctx = await chromium.launchPersistentContext(path.join(tmp, 'profile'), { channel: 'chromium', headless: true, viewport: { width: 1400, height: 900 }, args: [`--disable-extensions-except=${ext}`, `--load-extension=${ext}`] });
+let [sw] = ctx.serviceWorkers(); if (!sw) sw = await ctx.waitForEvent('serviceworker');
+const page = await ctx.newPage(); await page.goto(url);
+const rp = ctx.waitForEvent('page', { predicate: p => p.url().includes('result.html'), timeout: 120000 });
+await sw.evaluate(async u => { const [t] = await chrome.tabs.query({ url: u }); return globalThis.ptpCapture(t.id, { scrollDelay: 50 }); }, url);
+const v = await rp; await v.waitForFunction(() => window.ptp); await v.setViewportSize({ width: 1400, height: 900 });
+fs.mkdirSync('test/out/ui', { recursive: true });
+await v.screenshot({ path: 'test/out/ui/topbar-delete.png', clip: { x: 0, y: 0, width: 1400, height: 60 } });
+let asked = 0;
+v.once('dialog', d => { asked++; d.dismiss(); });
+await v.click('#deleteBtn'); await v.waitForTimeout(400);
+const still = await v.evaluate(() => window.ptp.getRec());
+console.log('after Cancel in the dialog: dialog shown', asked, '| capture still exists:', !!still, '| url:', v.url().split('/').pop());
+v.once('dialog', d => { asked++; d.accept(); });
+await Promise.all([v.waitForURL(/files\.html/), v.click('#deleteBtn')]);
+const left = await v.evaluate(async () => (await import('../lib/db.js')).listCaptures().then(l => l.length));
+console.log('after OK: dialogs', asked, '| now on', v.url().split('/').pop(), '| captures left:', left);
+await ctx.close(); server.close();

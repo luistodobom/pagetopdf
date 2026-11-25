@@ -1,0 +1,53 @@
+/* Toolbar popup — laid out like Chrome's own bubbles/app menu: a title row, menu-style
+   action rows with icons and accelerators, then settings rows with toggles. */
+body { width: 340px; background: var(--surface); }
+header { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 4px 16px; min-height: 48px; }
+header h1 { margin: 0; font-size: 15px; font-weight: 500; }
+header .actions { display: flex; gap: 0; }
+
+.list { display: flex; flex-direction: column; padding: 0; }
+.row {
+  display: flex; align-items: center; gap: 16px; width: 100%; min-height: 40px; padding: 8px 16px;
+  border: 0; background: transparent; color: var(--text); font: 13px var(--font); text-align: left; cursor: pointer;
+}
+button.row:hover, label.row:hover { background: var(--hover); }
+button.row:active { background: var(--pressed); }
+.row:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.row .ri { display: grid; place-items: center; color: var(--text-2); }
+.row .rt { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.row b { font-weight: 400; font-size: 13px; }
+.row small { color: var(--text-2); font-size: 12px; line-height: 1.35; }
+.primary-row { min-height: 56px; }
+.primary-row .ri { color: var(--accent); }
+.primary-row b { font-weight: 500; }
+.opts .row { padding-top: 10px; padding-bottom: 10px; }
+.row.sub { cursor: default; min-height: 44px; padding-top: 0; }
+.row.sub small { font-size: 12px; }
+.row:has(.switch input:focus-visible) { background: var(--hover); }
+.sep { height: 1px; background: var(--border); margin: 8px 0; }
+
+#busy, #error { display: flex; flex-direction: column; align-items: center; padding: 20px 16px 16px; text-align: center; }
+#busy[hidden], #error[hidden], #idle[hidden] { display: none; }
+#idle { padding-bottom: 4px; }
+.ring { position: relative; width: 96px; height: 96px; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 6; }
+.ring .track { stroke: var(--surface-3); }
+.ring .val { stroke: var(--accent); stroke-linecap: round; stroke-dasharray: 326.7; stroke-dashoffset: 326.7; transition: stroke-dashoffset .3s; }
+.ring span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 18px; font-weight: 500; }
+.stage { font-weight: 500; font-size: 14px; margin: 14px 0 2px; }
+.hint { margin: 0; font-size: 12px; }
+.stop-actions { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+.err-icon { color: var(--danger); }
+.err-icon svg.i { width: 32px; height: 32px; }
+#errMsg { color: var(--text-2); margin: 8px 0 16px; }
+
+footer { padding: 0 16px 16px; border-top: 1px solid var(--border); }
+footer:empty { display: none; }
+footer h4 { margin: 12px 0 8px; font-size: 12px; color: var(--text-2); font-weight: 500; }
+.recent { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.recent a { display: block; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 4 / 3; background: var(--surface-2); }
+.recent a:hover { border-color: var(--outline); }
+.recent img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+
+.err-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PageToPDF</title>
+<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1>PageToPDF</h1>
+    <div class="actions">
+      <button class="btn icon" id="files" title="All captures" aria-label="All captures" data-icon="grid"></button>
+      <button class="btn icon" id="options" title="Settings" aria-label="Settings" data-icon="settings"></button>
+    </div>
+  </header>
+
+  <main id="idle">
+    <div class="list">
+      <button class="row primary-row" id="capture">
+        <span class="ri" data-icon="page"></span>
+        <span class="rt"><b>Capture full page</b><small>Scroll, stitch &amp; save as PNG or PDF</small></span>
+        <span class="kbd" id="shortcut">Alt+Shift+P</span>
+      </button>
+      <button class="row" id="visible">
+        <span class="ri" data-icon="viewport"></span>
+        <span class="rt"><b>Capture visible area</b></span>
+      </button>
+    </div>
+
+    <div class="sep"></div>
+
+    <section class="list opts" aria-label="Capture options">
+      <label class="row">
+        <span class="rt"><b>Remove backgrounds</b><small>Ink-friendly: drops colours, keeps text readable</small></span>
+        <span class="switch"><input type="checkbox" id="removeBackgrounds"><span></span></span>
+      </label>
+      <label class="row">
+        <span class="rt"><b>High resolution</b><small id="hiResNote">Re-render the page at a higher pixel density</small></span>
+        <span class="switch"><input type="checkbox" id="hiRes"><span></span></span>
+      </label>
+      <div class="row sub" id="hiResRow" hidden>
+        <span class="rt"><small>Scale</small></span>
+        <div class="seg" id="hiResScale" role="group" aria-label="Resolution scale">
+          <button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button>
+        </div>
+      </div>
+      <label class="row">
+        <span class="rt"><b>Adjust repeating elements</b><small>Show sticky headers &amp; banners only once</small></span>
+        <span class="switch"><input type="checkbox" id="adjustRepeating"><span></span></span>
+      </label>
+    </section>
+  </main>
+
+  <main id="busy" hidden>
+    <div class="ring" role="progressbar" aria-label="Capture progress"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="track"/><circle cx="60" cy="60" r="52" class="val" id="ringVal"/></svg><span id="pct">0%</span></div>
+    <p class="stage" id="stage">Capturing page…</p>
+    <p class="muted hint">Keep this tab in front until the capture finishes.</p>
+    <div class="stop-actions">
+      <button class="btn" id="cancel" title="Stop and discard this capture">Cancel</button>
+      <button class="btn tonal" id="stopKeep" title="Stop scrolling and save the part captured so far">Stop &amp; save</button>
+    </div>
+  </main>
+
+  <main id="error" hidden>
+    <div class="err-icon" data-icon="info"></div>
+    <p id="errMsg"></p>
+    <div class="err-actions">
+      <button class="btn primary" id="allowSite" hidden></button>
+      <button class="btn" id="retry">Try again</button>
+    </div>
+  </main>
+
+  <footer id="recent"></footer>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

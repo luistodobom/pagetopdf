@@ -1,0 +1,28 @@
+/* Settings sections modelled on chrome://settings: a heading on the page background,
+   then a card of rows separated by hairlines; controls are right-aligned. */
+section.settings { margin-bottom: 24px; }
+section.settings .sec-head { margin: 16px 0 4px; min-height: 0; flex-direction: column; align-items: flex-start; }
+section.settings .sec-head p { margin: 2px 0 0; color: var(--text-2); font-size: 12px; }
+section.settings .card { margin-top: 8px; }
+.row {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  min-height: 48px; padding: 12px 20px;
+}
+.row + .row { border-top: 1px solid var(--border); }
+label.row:has(.switch) { cursor: pointer; }
+.row .lbl { flex: 1; min-width: 0; }
+.row .lbl b { display: block; font-weight: 400; }
+.row .lbl small { display: block; color: var(--text-2); font-size: 12px; line-height: 1.5; margin-top: 2px; }
+.row .ctl { flex: none; display: flex; align-items: center; gap: 12px; }
+.row .ctl select.input { width: 200px; }
+.row .ctl input[type=text].input { width: 240px; }
+.row .ctl input[type=number].input { width: 120px; }
+.row.disabled .lbl, .row.disabled .ctl { opacity: .38; }
+.row.disabled { pointer-events: none; }
+code { font: 12px var(--mono); background: var(--surface-2); padding: 1px 4px; border-radius: 4px; }
+.foot { margin: 24px 0 0; font-size: 12px; }
+@media (max-width: 600px) {
+  .row { flex-wrap: wrap; }
+  .row .ctl select.input, .row .ctl input[type=text].input { width: 100%; }
+  .row .ctl:has(select, input[type=text]) { width: 100%; }
+}

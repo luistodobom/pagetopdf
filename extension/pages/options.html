@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings · PageToPDF</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="files.css">
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header class="cr-toolbar">
+    <div class="tb-main">
+      <a class="brand" href="files.html"><span class="logo" data-icon="logo"></span>Settings</a>
+      <div class="tb-center"><div class="search"><span data-icon="search"></span><input type="search" id="q" placeholder="Search settings" aria-label="Search settings" autocomplete="off" spellcheck="false"></div></div>
+    </div>
+  </header>
+  <div class="cr-body">
+    <nav class="sidebar" aria-label="PageToPDF">
+      <a class="nav-item" href="files.html" data-icon="grid">Captures</a>
+      <a class="nav-item on" href="options.html" aria-current="page" data-icon="settings">Settings</a>
+      <div class="nav-sep"></div>
+      <button class="nav-item" id="navShortcuts" data-icon="keyboard">Keyboard shortcuts<span class="ext" data-icon="external"></span></button>
+      <a class="nav-item" href="https://github.com/luistodobom/pagetopdf" target="_blank" rel="noopener" data-icon="code">Source code<span class="ext" data-icon="external"></span></a>
+    </nav>
+    <main class="content">
+      <div id="sections"></div>
+      <p class="no-match muted" id="noMatch" hidden>No matching settings.</p>
+      <p class="muted foot">Changes are saved automatically and synced with your browser profile. PageToPDF is free and open source — there is no premium tier.</p>
+    </main>
+  </div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

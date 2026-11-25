@@ -1,0 +1,144 @@
+/* Viewer: a toolbar like chrome://downloads' header, a neutral canvas like Chrome's PDF
+   viewer, and a settings rail like Chrome's print preview. */
+html, body { height: 100%; }
+body { display: flex; flex-direction: column; overflow: hidden; }
+.topbar {
+  display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 12px 0 16px; z-index: 20; flex: none;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+}
+.topbar .brand { flex: none; }
+.meta { flex: 1; min-width: 0; }
+.meta .title { margin: 0; font-weight: 500; font-size: 14px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta .sub { display: flex; align-items: center; gap: 6px; color: var(--text-2); font-size: 12px; line-height: 18px; white-space: nowrap; overflow: hidden; }
+.meta .sub a { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; max-width: 40vw; }
+.meta .sub a:hover { color: var(--accent); }
+.meta .chip { height: 18px; }
+.meta .chip:empty { display: none; }
+.tools { display: flex; align-items: center; gap: 8px; }
+
+/* Material 3 split button: two pills joined by a 2px gap */
+.split { position: relative; display: flex; gap: 2px; }
+.split .btn.primary:first-child { border-radius: 18px 4px 4px 18px; padding: 0 16px 0 14px; }
+.split .caret { border-radius: 4px 18px 18px 4px; width: 36px; padding: 0; }
+.split .caret svg.i { transition: transform .15s; }
+.split .caret[aria-expanded="true"] svg.i { transform: rotate(180deg); }
+.menu.right { right: 0; top: calc(100% + 4px); min-width: 260px; }
+.menu .item.danger { color: var(--danger); }
+.menu .item.danger svg.i { color: var(--danger); }
+
+.layout { flex: 1; display: flex; min-height: 0; }
+.stage { flex: 1; overflow: auto; padding: 24px 24px 120px; position: relative; background: var(--stage); }
+.doc { position: relative; margin: 0 auto; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .2), 0 4px 12px rgba(0, 0, 0, .12); }
+.tiles { overflow: hidden; line-height: 0; }
+.tiles img { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+#overlay { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+body.editing #overlay { pointer-events: auto; cursor: crosshair; touch-action: none; }
+body.editing.tool-select #overlay { cursor: default; }
+#overlay .shape { pointer-events: visiblePainted; }
+body.tool-select #overlay .shape { cursor: move; }
+#overlay .selected { filter: drop-shadow(0 0 2px #0b57d0) drop-shadow(0 0 1px #fff); }
+/* Page-break preview sits on the (always light) screenshot, so it uses Chrome's light blue. */
+.pb-line { stroke: #0b57d0; }
+.pb-pill { fill: #0b57d0; }
+.pb-label { fill: #fff; font-family: var(--font); font-weight: 500; }
+
+/* Print-preview-like settings rail */
+.panel {
+  width: 320px; flex: none; overflow: auto; padding: 8px 0 16px; background: var(--bg);
+  border-left: 1px solid var(--border); transition: margin .2s, opacity .2s, visibility 0s;
+}
+.panel.closed { margin-right: -320px; opacity: 0; visibility: hidden; transition: margin .2s, opacity .2s, visibility 0s .2s; }
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; padding: 12px 20px 12px; }
+.panel h2 { margin: 0; font-size: 16px; font-weight: 400; }
+.panel .count { color: var(--text-2); font-size: 13px; }
+.prow { display: grid; grid-template-columns: 88px 1fr; align-items: center; gap: 12px; padding: 6px 20px; min-height: 48px; }
+.prow.top { align-items: start; padding-top: 12px; }
+.prow > label, .prow .plabel { color: var(--text); font-size: 13px; }
+.prow.top .plabel { padding-top: 1px; }
+.prow select.input { width: 100%; }
+.checks { display: flex; flex-direction: column; gap: 12px; }
+.ck { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.ck input { width: 16px; height: 16px; margin: 1px 0 0; flex: none; cursor: pointer; }
+.ck span { display: flex; flex-direction: column; }
+.ck b { font-weight: 400; font-size: 13px; line-height: 18px; }
+.ck small { color: var(--text-2); font-size: 12px; line-height: 16px; }
+.note { margin: 16px 20px 0; padding-top: 16px; border-top: 1px solid var(--border); color: var(--text-2); font-size: 12px; }
+
+/* Floating annotation toolbar */
+.editbar {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 30;
+  display: flex; align-items: center; gap: 4px; padding: 6px 8px;
+  background: var(--surface); border-radius: 28px; box-shadow: var(--shadow-menu);
+  animation: rise .15s ease-out;
+}
+.editbar[hidden] { display: none; }
+@keyframes rise { from { opacity: 0; transform: translate(-50%, 8px); } }
+.editbar .group { display: flex; align-items: center; gap: 2px; }
+.editbar .btn.icon.active { background: var(--accent-soft); color: var(--accent-soft-text); }
+.editbar .btn.primary { margin-left: 4px; }
+.vsep { width: 1px; height: 24px; background: var(--border); margin: 0 6px; }
+.swatches button {
+  width: 20px; height: 20px; border-radius: 50%; cursor: pointer; margin: 0 3px; padding: 0;
+  border: 1px solid rgba(0, 0, 0, .2);
+}
+@media (prefers-color-scheme: dark) { .swatches button { border-color: rgba(255, 255, 255, .25); } }
+.swatches button.on { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+.text-input {
+  position: absolute; z-index: 5; min-width: 60px; padding: 2px 4px; outline: 2px dashed #0b57d0; background: rgba(255,255,255,.85);
+  font: 600 20px var(--font); line-height: 1.25; white-space: pre; border-radius: 4px;
+}
+@media (max-width: 1000px) { .zoom { display: none; } }
+@media (max-width: 900px) {
+  .panel { position: fixed; right: 0; top: 56px; bottom: 0; box-shadow: var(--shadow-menu); z-index: 25; }
+  #editBtn { width: 36px; padding: 0; font-size: 0; gap: 0; }
+  .split .btn.primary:first-child { font-size: 0; gap: 0; padding: 0 10px 0 12px; }
+}
+
+/* Crop mode: same floating bar, a segmented "Keep area / Remove rows / Remove columns" picker */
+.editbar .mode-group { display: flex; align-items: center; gap: 4px; }
+.editbar .mode-group[hidden] { display: none; }
+.crop-seg { height: 36px; border-radius: 18px; }
+.crop-seg button { gap: 6px; padding: 0 14px 0 12px; font-size: 13px; white-space: nowrap; }
+.crop-seg button svg.i { width: 18px; height: 18px; }
+.crop-seg button.on svg.i { color: var(--accent-soft-text); }
+.editbar .hint { color: var(--text-2); font-size: 12px; padding: 0 6px 0 10px; white-space: nowrap; }
+body.mode-crop #overlay { cursor: crosshair; }
+body.mode-crop.crop-rows #overlay { cursor: row-resize; }
+body.mode-crop.crop-cols #overlay { cursor: col-resize; }
+body.mode-crop #overlay .shape { pointer-events: none; }
+body.mode-crop.crop-rows #overlay .cut, body.mode-crop.crop-cols #overlay .cut { cursor: move; }
+#overlay .cut-label { fill: #fff; font-family: var(--font); font-weight: 500; }
+#overlay .cut-del:hover circle { fill: #e8eaed; }
+@media (max-width: 1100px) { .editbar .hint { display: none; } }
+@media (max-width: 900px) {
+  #cropBtn { width: 36px; padding: 0; font-size: 0; gap: 0; }
+  .crop-seg button { font-size: 0; gap: 0; padding: 0 10px; }
+}
+#overlay { user-select: none; -webkit-user-select: none; }
+body.crop-keep #overlay .cut { pointer-events: none; }
+
+/* Top-bar delete: neutral like the other icon buttons, red on hover/focus. */
+.btn.icon.delete-btn:hover, .btn.icon.delete-btn:focus-visible { color: var(--danger); background: var(--danger-soft); }
+
+/* Pen thickness: a compact segmented control of three dots, shown only for the pen. */
+.editbar .pen-opts { display: flex; align-items: center; }
+.editbar .pen-opts[hidden] { display: none; }
+.pen-widths button { min-width: 34px; padding: 0 8px; }
+.editbar select.text-size { height: 32px; width: 84px; margin-left: 2px; }
+.pen-widths .dot { display: block; border-radius: 50%; background: currentColor; }
+
+/* Redact: a labelled tool, set apart from the drawing tools. */
+.editbar .redact-tool { gap: 6px; padding: 0 12px 0 10px; }
+.editbar .redact-tool.active { background: var(--text); color: var(--surface); border-color: transparent; }
+/* Tip shown above the Draw toolbar: use Redact (not paint) to hide information. */
+.draw-tip {
+  position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 30;
+  display: flex; align-items: center; gap: 10px; max-width: min(760px, calc(100vw - 32px));
+  padding: 8px 8px 8px 14px; border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-menu);
+  color: var(--text-2); font-size: 12.5px; line-height: 1.4; animation: rise .15s ease-out;
+}
+.draw-tip[hidden] { display: none; }
+.draw-tip b { color: var(--text); font-weight: 600; }
+.draw-tip .tip-icon { color: var(--text); flex: none; display: grid; }
+.draw-tip .btn { flex: none; }
+.note:empty { display: none; }

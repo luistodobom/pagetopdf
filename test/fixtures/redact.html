@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Redaction fixture for MARMOSETX</title>
+<style>
+body{font:18px/1.6 Arial,Helvetica,sans-serif;margin:0;background:#fff;color:#111}
+main{width:900px;margin:0 auto;padding:30px 40px}
+p{margin:0 0 26px}
+.spacer{height:700px;background:linear-gradient(#f3f4f6,#e5e7eb);margin:0 0 26px;font-size:14px;color:#6b7280;padding:8px}
+#pic{display:block;width:240px;height:120px;margin:0 0 26px}
+#wrap{width:330px;margin:0 0 26px}
+#pe1,#pe2{font-family:"Courier New",Courier,monospace}
+</style></head><body><main>
+<h1>Redaction test page</h1>
+<!-- (a) two whole words in the middle of one text run -->
+<p id="pa">Alpha bravo MARMOSETX NARWHALY charlie delta echo foxtrot.</p>
+<!-- (b) long run, box over the middle words and half of the next word; plus a box over only the bottom of a word -->
+<p id="pb">leftsideone leftsidetwo OCELOTPRIME TAPIRSECOND PANGOLINQX rightsideone rightsidetwo</p>
+<p id="pv">upperline keepvisible WOMBATLOW trailingword</p>
+<!-- (c) part of a link (the URL carries the redacted value), a wrapped link redacted on its second line, and a link that stays -->
+<p id="pc">See the <a id="lc" href="https://private.example/ACCOUNT-778899">Statement ACCOUNTREF for March</a> and also <a id="lp" href="https://public.example/okay">Public link</a> here.</p>
+<div id="wrap"><a id="lw" href="https://wrapped.example/SECRETWRAP-4411" style="display:inline">Wrapped link first line goes on and continues WRAPTAILZ</a></div>
+<!-- (d) an image -->
+<img id="pic" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120'%3E%3Crect width='80' height='120' fill='%23ff0000'/%3E%3Crect x='80' width='80' height='120' fill='%2300ff00'/%3E%3Crect x='160' width='80' height='120' fill='%230000ff'/%3E%3Ctext x='20' y='70' font-size='28' fill='white'%3EIMGSECRET%3C/text%3E%3C/svg%3E">
+<div class="spacer" id="band">Band that crop tests remove</div>
+<!-- (e) a redaction spanning a removed band's seam -->
+<p id="pe1">seamabove KINKAJOUTOP staysabove</p>
+<div class="spacer" id="band2" style="height:300px">second band</div>
+<p id="pe2">seambelow AXOLOTLDOWN staysbelow</p>
+<p>Closing paragraph with ordinary words.</p>
+</main></body></html>

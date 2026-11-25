@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Captures · PageToPDF</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="files.css">
+</head>
+<body>
+  <header class="cr-toolbar">
+    <div class="tb-main">
+      <a class="brand" href="files.html"><span class="logo" data-icon="logo"></span>Captures</a>
+      <div class="tb-center"><div class="search"><span data-icon="search"></span><input type="search" id="q" placeholder="Search captures" aria-label="Search captures" autocomplete="off" spellcheck="false"></div></div>
+    </div>
+    <div class="selbar" id="selbar" hidden>
+      <button class="btn icon" id="selCancel" title="Clear selection" aria-label="Clear selection" data-icon="x"></button>
+      <span id="selCount">0 selected</span>
+      <span class="spacer"></span>
+      <button class="btn" id="selAll">Select all</button>
+      <button class="btn primary" id="delSel" data-icon="trash"> Delete</button>
+    </div>
+  </header>
+  <div class="cr-body">
+    <nav class="sidebar" aria-label="PageToPDF">
+      <a class="nav-item on" href="files.html" aria-current="page" data-icon="grid">Captures</a>
+      <a class="nav-item" href="options.html" data-icon="settings">Settings</a>
+      <div class="nav-sep"></div>
+      <button class="nav-item" id="navShortcuts" data-icon="keyboard">Keyboard shortcuts<span class="ext" data-icon="external"></span></button>
+      <a class="nav-item" href="https://github.com/luistodobom/pagetopdf" target="_blank" rel="noopener" data-icon="code">Source code<span class="ext" data-icon="external"></span></a>
+    </nav>
+    <main class="content wide">
+      <div class="sec-head"><h2 class="sec-title" id="summary">Stored privately in this browser</h2></div>
+      <div class="grid" id="grid"></div>
+      <p class="no-match muted" id="noMatch" hidden>No captures match your search.</p>
+      <div class="empty" id="empty" hidden>
+        <div class="ill" data-icon="camera"></div>
+        <p>Pages you capture appear here</p>
+        <p class="muted small">Click the PageToPDF button in the toolbar or press <span class="kbd" id="emptyShortcut">Alt+Shift+P</span> on any page.</p>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="files.js"></script>
+</body>
+</html>

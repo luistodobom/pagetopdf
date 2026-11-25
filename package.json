@@ -1,0 +1,26 @@
+{
+  "name": "pagetopdf",
+  "version": "1.0.0",
+  "scripts": {
+    "package": "mkdir -p dist && cd extension && zip -qr ../dist/pagetopdf.zip . -x '*.DS_Store' 'icons/*.svg'",
+    "icons": "node scripts/icons.mjs",
+    "test": "node test/run.mjs && python3 test/check.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luistodobom/pagetopdf.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luistodobom/pagetopdf/issues"
+  },
+  "homepage": "https://github.com/luistodobom/pagetopdf#readme",
+  "description": "Open-source full-page screenshot to PNG/PDF Chrome extension",
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  },
+  "type": "module",
+  "private": "true"
+}

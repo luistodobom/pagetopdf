@@ -1,0 +1,42 @@
+// Draw mode: labelled Redact tool + "use Redact" tip (node test/redact-ui.mjs).
+import { chromium } from 'playwright';
+import fs from 'fs'; import path from 'path'; import http from 'http';
+const tmp = path.join(process.argv[2] || 'test/out', `keep-${Date.now()}`);
+const ext = path.join(tmp, 'ext');
+fs.mkdirSync(tmp, { recursive: true });
+fs.cpSync('extension', ext, { recursive: true });
+const mf = JSON.parse(fs.readFileSync(path.join(ext, 'manifest.json'))); mf.host_permissions = ['<all_urls>']; fs.writeFileSync(path.join(ext, 'manifest.json'), JSON.stringify(mf));
+const server = http.createServer((q, r) => { r.writeHead(200, { 'content-type': 'text/html' }); fs.createReadStream('test/fixtures/long.html').pipe(r); });
+await new Promise(r => server.listen(0, r)); const url = `http://127.0.0.1:${server.address().port}/long.html`;
+const ctx = await chromium.launchPersistentContext(path.join(tmp, 'profile'), { channel: 'chromium', headless: true, viewport: { width: 1400, height: 900 }, args: [`--disable-extensions-except=${ext}`, `--load-extension=${ext}`] });
+let [sw] = ctx.serviceWorkers(); if (!sw) sw = await ctx.waitForEvent('serviceworker');
+const page = await ctx.newPage(); await page.goto(url);
+const rp = ctx.waitForEvent('page', { predicate: p => p.url().includes('result.html'), timeout: 120000 });
+await sw.evaluate(async u => { const [t] = await chrome.tabs.query({ url: u }); return globalThis.ptpCapture(t.id, { scrollDelay: 50 }); }, url);
+const v = await rp; await v.waitForFunction(() => window.ptp); await v.setViewportSize({ width: 1400, height: 900 });
+const out = [];
+for (const scheme of ['light', 'dark']) {
+  await v.emulateMedia({ colorScheme: scheme }); await v.reload(); await v.waitForFunction(() => window.ptp);
+  await v.evaluate(() => { try { localStorage.removeItem('ptp-redact-tip'); } catch {} });
+  const note = await v.textContent('#captureNote');
+  await v.click('#editBtn'); await v.waitForTimeout(300);
+  const tipShown = await v.isVisible('#drawTip');
+  const label = (await v.textContent('[data-tool="redact"]')).trim();
+  fs.mkdirSync('test/out/ui', { recursive: true });
+  await v.screenshot({ path: `test/out/ui/draw-redact-tip-${scheme}.png` });
+  await v.click('#tipUseRedact'); await v.waitForTimeout(150);
+  const usedRedact = await v.evaluate(() => document.querySelector('[data-tool="redact"]').classList.contains('active'));
+  await v.click('[data-tool="pen"]'); await v.click('[data-tool="redact"]');
+  const clickRedact = await v.evaluate(() => document.querySelector('[data-tool="redact"]').classList.contains('active'));
+  await v.click('[data-tool="pen"]'); await v.keyboard.press('x');
+  const keyRedact = await v.evaluate(() => document.querySelector('[data-tool="redact"]').classList.contains('active'));
+  await v.screenshot({ path: `test/out/ui/draw-redact-active-${scheme}.png` });
+  await v.click('#tipClose'); await v.click('#doneEdit'); await v.reload(); await v.waitForFunction(() => window.ptp);
+  await v.click('#editBtn'); await v.waitForTimeout(200);
+  const tipAfterDismiss = await v.isVisible('#drawTip');
+  await v.click('#doneEdit');
+  out.push({ scheme, countLineGone: !/text runs/.test(note), tipShown, label, usedRedact, clickRedact, keyRedact, tipGoneAfterDismiss: !tipAfterDismiss });
+}
+console.table(out);
+await ctx.close(); server.close();
+process.exit(out.every(o => o.countLineGone && o.tipShown && o.label === 'Redact' && o.usedRedact && o.clickRedact && o.keyRedact && o.tipGoneAfterDismiss) ? 0 : 1);

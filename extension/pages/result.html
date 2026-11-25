@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Capture · PageToPDF</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="result.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="files.html" title="All captures" aria-label="All captures"><span class="logo" data-icon="logo"></span></a>
+    <div class="meta">
+      <h1 class="title" id="title">Loading…</h1>
+      <div class="sub"><a id="url" target="_blank" rel="noopener"></a><span class="dot">·</span><span id="when"></span><span class="chip" id="dims"></span><span class="chip" id="badges"></span></div>
+    </div>
+    <div class="tools">
+      <div class="seg zoom" id="zoomSeg" role="group" aria-label="Zoom"><button data-z="fit" class="on">Fit</button><button data-z="1">100%</button></div>
+      <button class="btn" id="editBtn" data-icon="edit" aria-pressed="false" title="Draw on the capture (D)" aria-keyshortcuts="D"> Draw</button>
+      <button class="btn" id="cropBtn" data-icon="crop" aria-pressed="false" title="Crop or cut out sections (C)" aria-keyshortcuts="C"> Crop</button>
+      <button class="btn icon" id="copyBtn" title="Copy image to clipboard" aria-label="Copy image to clipboard" data-icon="copy"></button>
+      <button class="btn icon delete-btn" id="deleteBtn" title="Delete capture" aria-label="Delete capture" data-icon="trash"></button>
+      <button class="btn icon" id="panelBtn" title="PDF settings" aria-label="PDF settings" aria-controls="panel" data-icon="settings"></button>
+      <div class="split">
+        <button class="btn primary" id="dlPdf" data-icon="download"> Download PDF</button>
+        <button class="btn primary caret" id="dlMenuBtn" title="More formats" aria-label="More formats and actions" aria-haspopup="menu" aria-expanded="false" aria-controls="dlMenu" data-icon="chevron"></button>
+        <div class="menu right" id="dlMenu" role="menu" aria-label="Download options">
+          <button class="item" role="menuitem" data-act="pdf" data-icon="pdf"><span>PDF document<small>Searchable text, clickable links</small></span></button>
+          <button class="item" role="menuitem" data-act="png" data-icon="image"><span>PNG image<small>Lossless, exact pixels</small></span></button>
+          <button class="item" role="menuitem" data-act="jpg" data-icon="image"><span>JPG image<small>Smaller file size</small></span></button>
+          <div class="sep" role="separator"></div>
+          <button class="item" role="menuitem" data-act="open" data-icon="external"><span>Open original page</span></button>
+          <button class="item" role="menuitem" data-act="copyurl" data-icon="link"><span>Copy original URL</span></button>
+          <button class="item" role="menuitem" data-act="files" data-icon="grid"><span>All captures</span></button>
+          <div class="sep" role="separator"></div>
+          <button class="item danger" role="menuitem" data-act="delete" data-icon="trash"><span>Delete capture</span></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <main class="stage" id="stage">
+      <div class="doc" id="doc">
+        <div class="tiles" id="tiles"></div>
+        <svg id="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </main>
+
+    <aside class="panel" id="panel" aria-label="PDF settings">
+      <div class="panel-head">
+        <h2>PDF settings</h2>
+        <span class="count" id="pageCount">– pages</span>
+      </div>
+      <div class="prow">
+        <label for="paperSize">Paper size</label>
+        <select class="input" id="paperSize"></select>
+      </div>
+      <div class="prow">
+        <label for="orientation">Layout</label>
+        <select class="input" id="orientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select>
+      </div>
+      <div class="prow">
+        <label for="marginMm">Margins</label>
+        <select class="input" id="marginMm"><option value="0">None</option><option value="6">Small</option><option value="12">Normal</option><option value="20">Large</option></select>
+      </div>
+      <div class="prow">
+        <label for="pdfImageQuality">Quality</label>
+        <select class="input" id="pdfImageQuality"><option value="0.8">Compact</option><option value="0.92">High</option><option value="1">Lossless</option></select>
+      </div>
+      <div class="prow top">
+        <span class="plabel">Options</span>
+        <div class="checks">
+          <label class="ck"><input type="checkbox" id="smartSplit"><span><b>Smart page splitting</b><small>Never cut a line of text in half</small></span></label>
+          <label class="ck"><input type="checkbox" id="pdfHeader"><span><b>Title &amp; date header</b><small>Page title and capture time</small></span></label>
+          <label class="ck"><input type="checkbox" id="pdfFooter"><span><b>URL &amp; page numbers</b><small>Clickable source link in the footer</small></span></label>
+          <label class="ck"><input type="checkbox" id="textLayer"><span><b>Searchable text</b><small>Select, copy and search the PDF</small></span></label>
+          <label class="ck"><input type="checkbox" id="activeLinks"><span><b>Active links</b><small>Links in the page stay clickable</small></span></label>
+        </div>
+      </div>
+      <div class="prow top">
+        <span class="plabel">Preview</span>
+        <div class="checks">
+          <label class="ck"><input type="checkbox" id="showBreaks" checked><span><b>Show page breaks</b><small>Where the PDF pages split</small></span></label>
+        </div>
+      </div>
+      <p class="note" id="captureNote"></p>
+    </aside>
+  </div>
+
+  <div class="draw-tip" id="drawTip" role="note" hidden>
+    <span class="tip-icon" data-icon="redact"></span>
+    <span><b>Want to redact something?</b> Use Redact: it removes the text, links and image underneath from the PDF and images. Drawing over it only paints on top, so the text stays in the PDF.</span>
+    <button class="btn" id="tipUseRedact">Use Redact</button>
+    <button class="btn icon" id="tipClose" title="Don’t show again" aria-label="Dismiss tip" data-icon="x"></button>
+  </div>
+  <div class="editbar" id="editbar" role="toolbar" aria-label="Drawing tools" hidden>
+    <div class="mode-group" id="drawTools">
+    <div class="group" id="toolGroup">
+      <button class="btn icon" data-tool="select" title="Select &amp; move (V)" aria-label="Select and move" data-icon="pointer"></button>
+      <span class="vsep"></span>
+      <button class="btn icon" data-tool="pen" title="Pen (P)" aria-label="Pen" aria-keyshortcuts="P" data-icon="pen"></button>
+      <button class="btn icon" data-tool="rect" title="Rectangle (R)" aria-label="Rectangle" data-icon="rect"></button>
+      <button class="btn icon" data-tool="ellipse" title="Ellipse (O)" aria-label="Ellipse" data-icon="ellipse"></button>
+      <button class="btn icon" data-tool="arrow" title="Arrow (A)" aria-label="Arrow" data-icon="arrow"></button>
+      <button class="btn icon" data-tool="line" title="Line (L)" aria-label="Line" data-icon="line"></button>
+      <button class="btn icon" data-tool="text" title="Text (T)" aria-label="Text" data-icon="text"></button>
+      <button class="btn icon" data-tool="highlight" title="Highlight (H)" aria-label="Highlight" data-icon="highlight"></button>
+    </div>
+    <span class="vsep"></span>
+    <button class="btn redact-tool" data-tool="redact" title="Redact — removes the text, links and image underneath from every export (PDF, PNG, JPG, copy). The stored capture keeps the original, so you can undo. (X)" aria-label="Redact" aria-keyshortcuts="X" data-icon="redact"> Redact</button>
+    <span class="vsep"></span>
+    <div class="group swatches" id="swatches" role="group" aria-label="Colour"></div>
+    <div class="pen-opts" id="penOpts" hidden>
+      <span class="vsep"></span>
+      <div class="seg pen-widths" id="penWidths" role="radiogroup" aria-label="Line thickness"></div>
+    </div>
+    <div class="pen-opts" id="textOpts" hidden>
+      <span class="vsep"></span>
+      <select class="input text-size" id="textSize" title="Text size" aria-label="Text size"></select>
+    </div>
+    </div>
+    <div class="mode-group" id="cropTools" hidden>
+      <div class="seg crop-seg" id="cropSeg" role="radiogroup" aria-label="Crop mode">
+        <button role="radio" data-crop="keep" data-icon="crop" title="Keep only the area you select (K)" aria-keyshortcuts="K"> Keep area</button>
+        <button role="radio" data-crop="rows" data-icon="cutRows" title="Cut out a horizontal section and join what is above and below (R)" aria-keyshortcuts="R"> Remove rows</button>
+        <button role="radio" data-crop="cols" data-icon="cutCols" title="Cut out a vertical strip and join what is left and right (Shift+R)" aria-keyshortcuts="Shift+R"> Remove columns</button>
+      </div>
+      <span class="hint" id="cropHint" aria-live="polite"></span>
+    </div>
+    <span class="vsep"></span>
+    <div class="group">
+      <button class="btn icon" id="undo" title="Undo (⌘Z)" aria-label="Undo" data-icon="undo"></button>
+      <button class="btn icon" id="redo" title="Redo (⇧⌘Z)" aria-label="Redo" data-icon="redo"></button>
+      <button class="btn ghost" id="resetEdits" title="Remove all drawings">Reset</button>
+      <button class="btn primary" id="doneEdit">Done</button>
+    </div>
+  </div>
+
+  <script type="module" src="result.js"></script>
+</body>
+</html>

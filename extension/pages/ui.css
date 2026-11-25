@@ -1,0 +1,225 @@
+/* PageToPDF design system — modelled on Chrome's own WebUI (chrome://settings,
+   chrome://downloads, chrome://history) in the "Chrome Refresh 2023" / Material 3 style.
+   Colour values are Chrome's own fallback colour tokens (cr-fallback-color-*), so pages
+   blend in with the browser. Light/dark follows the browser via prefers-color-scheme
+   (Chrome reports its effective Light/Dark/Device mode to extension pages and updates it
+   live). Custom Web Store theme colours are not exposed to extensions, so we use Chrome's
+   default palette. */
+:root {
+  color-scheme: light dark;
+  --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* light — Chrome Refresh fallback palette */
+  --bg: #ffffff;              /* page background */
+  --surface: #ffffff;         /* cards, menus, popups */
+  --surface-2: #f2f2f2;       /* neutral container */
+  --surface-3: #e1e3e1;       /* surface variant (toggle track, progress track) */
+  --field: #e9eef6;           /* search field (base container) */
+  --stage: #e8eaed;           /* viewer canvas behind the screenshot */
+  --border: #e3e3e3;          /* dividers between rows */
+  --border-strong: #c7c7c7;   /* neutral outline: selects, inputs */
+  --outline: #747775;
+  --btn-border: #a8c7fa;      /* tonal outline used by Chrome's outlined buttons */
+  --text: #1f1f1f;
+  --text-2: #444746;
+  --text-3: #5e5e5e;
+  --accent: #0b57d0;          /* primary */
+  --accent-text: #ffffff;     /* on-primary */
+  --accent-soft: #d3e3fd;     /* tonal / primary container */
+  --accent-soft-text: #041e49;
+  --hover: rgba(31, 31, 31, .08);
+  --pressed: rgba(31, 31, 31, .12);
+  --hover-on-accent: rgba(253, 252, 251, .10);
+  --danger: #b3261e;
+  --danger-soft: #f9dedc;
+  --inverse: #303030;
+  --inverse-text: #f2f2f2;
+  --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, .3), 0 1px 3px 1px rgba(0, 0, 0, .15);
+  --shadow-menu: 0 2px 6px 2px rgba(0, 0, 0, .15), 0 1px 2px 0 rgba(0, 0, 0, .3);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  accent-color: var(--accent);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #202124;
+    --surface: #292a2d;
+    --surface-2: #303134;
+    --surface-3: #444746;
+    --field: #303134;
+    --stage: #18191b;
+    --border: rgba(255, 255, 255, .1);
+    --border-strong: #757575;
+    --outline: #8e918f;
+    --btn-border: #047db7;
+    --text: #e3e3e3;
+    --text-2: #c4c7c5;
+    --text-3: #a8abaf;
+    --accent: #a8c7fa;
+    --accent-text: #062e6f;
+    --accent-soft: #004a77;
+    --accent-soft-text: #c2e7ff;
+    --hover: rgba(227, 227, 227, .08);
+    --pressed: rgba(227, 227, 227, .12);
+    --hover-on-accent: rgba(31, 31, 31, .10);
+    --danger: #f2b8b5;
+    --danger-soft: #601410;
+    --inverse: #e3e3e3;
+    --inverse-text: #1f1f1f;
+    --shadow-card: none;
+    --shadow-menu: 0 2px 6px 2px rgba(0, 0, 0, .3), 0 1px 2px 0 rgba(0, 0, 0, .5);
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  font: 13px/1.54 var(--font);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+svg.i { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ------------------------------------------------------------ buttons
+   .btn          outlined pill (cr-button)
+   .btn.primary  filled pill (cr-button.action-button)
+   .btn.tonal    tonal pill
+   .btn.ghost    text button
+   .btn.icon     round icon button (cr-icon-button) */
+.btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 36px; padding: 0 16px; border-radius: 18px;
+  border: 1px solid var(--btn-border); background: transparent; color: var(--accent);
+  font: 500 13px var(--font); cursor: pointer; white-space: nowrap; user-select: none;
+  transition: background-color .1s, color .1s, border-color .1s;
+}
+.btn svg.i { width: 18px; height: 18px; }
+.btn:hover { background: var(--hover); }
+.btn:active { background: var(--pressed); }
+.btn[disabled] { opacity: .38; pointer-events: none; }
+.btn.primary { background: var(--accent); border-color: transparent; color: var(--accent-text); }
+.btn.primary:hover { background: linear-gradient(var(--hover-on-accent), var(--hover-on-accent)) var(--accent); }
+.btn.tonal { background: var(--accent-soft); border-color: transparent; color: var(--accent-soft-text); }
+.btn.tonal:hover { background: linear-gradient(var(--hover), var(--hover)) var(--accent-soft); }
+.btn.ghost { border-color: transparent; }
+.btn.icon { width: 36px; padding: 0; border-color: transparent; color: var(--text-2); border-radius: 50%; }
+.btn.icon svg.i { width: 20px; height: 20px; }
+.btn.danger { color: var(--danger); border-color: var(--border-strong); }
+.btn.danger:hover { background: var(--danger-soft); }
+.btn.active { background: var(--accent-soft); color: var(--accent-soft-text); border-color: transparent; }
+
+/* ------------------------------------------------------------ fields */
+.input, select.input {
+  height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--border-strong);
+  background: transparent; color: var(--text); font: 13px var(--font); min-width: 0;
+}
+select.input {
+  /* Chrome's md-select: outlined, 8px radius, small triangle on the right */
+  appearance: none; padding-right: 32px; cursor: pointer;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%), linear-gradient(135deg, var(--text-2) 50%, transparent 50%);
+  background-position: right 17px center, right 12px center;
+  background-size: 5px 5px, 5px 5px;
+}
+select.input option { background: var(--surface); color: var(--text); }
+.input:hover { border-color: var(--outline); }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* Search field like cr-toolbar-search-field */
+.search {
+  position: relative; display: flex; align-items: center; height: 40px; border-radius: 20px;
+  background: var(--field); color: var(--text-2); max-width: 680px; flex: 1;
+}
+.search > span { position: absolute; left: 14px; top: 0; bottom: 0; display: flex; align-items: center; pointer-events: none; }
+.search input {
+  width: 100%; height: 100%; border: 0; border-radius: 20px; background: transparent; color: var(--text);
+  font: 13px var(--font); padding: 0 16px 0 44px; outline: none;
+}
+.search input::placeholder { color: var(--text-2); }
+.search:focus-within { box-shadow: inset 0 0 0 2px var(--accent); }
+
+/* ------------------------------------------------------------ toggle (cr-toggle, Chrome Refresh) */
+.switch { position: relative; width: 28px; height: 18px; flex: none; display: inline-block; }
+.switch input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+.switch span {
+  position: absolute; inset: 0; border-radius: 9px; cursor: pointer;
+  background: var(--surface-3); border: 1px solid var(--outline); transition: background-color .1s, border-color .1s;
+}
+.switch span::after {
+  content: ""; position: absolute; top: 50%; left: 4px; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%;
+  background: var(--outline); transition: transform .1s, width .1s, height .1s, margin .1s, background-color .1s;
+}
+.switch input:checked + span { background: var(--accent); border-color: var(--accent); }
+.switch input:checked + span::after { width: 12px; height: 12px; margin-top: -6px; transform: translateX(8px); background: var(--accent-text); }
+.switch input:hover + span::after { box-shadow: 0 0 0 6px var(--hover); }
+.switch input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch input:disabled + span { opacity: .38; }
+
+/* ------------------------------------------------------------ segmented buttons (Material 3) */
+.seg { display: inline-flex; border: 1px solid var(--outline); border-radius: 16px; overflow: hidden; height: 32px; }
+.seg button {
+  border: 0; background: transparent; color: var(--text); font: 500 12px var(--font);
+  padding: 0 12px; cursor: pointer; min-width: 44px; display: inline-flex; align-items: center; justify-content: center;
+}
+.seg button + button { border-left: 1px solid var(--outline); }
+.seg button:hover { background: var(--hover); }
+.seg button.on { background: var(--accent-soft); color: var(--accent-soft-text); }
+.seg button:focus-visible { outline-offset: -3px; }
+
+/* ------------------------------------------------------------ cards (settings sections) */
+.card { background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow-card); }
+
+/* ------------------------------------------------------------ menus (cr-action-menu / app menu) */
+.menu {
+  position: absolute; z-index: 50; min-width: 220px; padding: 8px 0;
+  background: var(--surface); border-radius: 8px; box-shadow: var(--shadow-menu);
+  visibility: hidden; opacity: 0; transition: opacity .1s, visibility 0s .1s;
+}
+.menu.open { visibility: visible; opacity: 1; transition: opacity .1s; }
+.menu button.item {
+  display: flex; width: 100%; align-items: center; gap: 12px; min-height: 36px; padding: 6px 16px; border: 0;
+  background: transparent; color: var(--text); font: 13px var(--font); cursor: pointer; text-align: left;
+}
+.menu button.item svg.i { width: 20px; height: 20px; color: var(--text-2); }
+.menu button.item:hover, .menu button.item:focus-visible { background: var(--hover); outline: none; }
+.menu button.item:focus-visible { box-shadow: inset 0 0 0 2px var(--accent); }
+.menu .item small { display: block; color: var(--text-2); font-size: 12px; line-height: 1.35; }
+.menu .sep { height: 1px; background: var(--border); margin: 8px 0; }
+
+.kbd { font: 12px var(--font); color: var(--text-2); white-space: nowrap; }
+.muted { color: var(--text-2); }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 20px; padding: 0 8px; border-radius: 4px; background: var(--surface-2); color: var(--text-2); font-size: 11px; font-weight: 500; }
+
+/* ------------------------------------------------------------ toast (cr-toast) */
+.toast-wrap { position: fixed; left: 24px; bottom: 24px; z-index: 100; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; pointer-events: none; }
+.toast {
+  background: var(--inverse); color: var(--inverse-text); min-height: 48px; padding: 12px 16px; border-radius: 8px;
+  box-shadow: var(--shadow-menu); font-size: 13px; display: flex; gap: 16px; align-items: center; min-width: 240px; max-width: 480px;
+  animation: toast-in .15s ease-out;
+}
+.toast .bar { width: 120px; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--inverse-text) 25%, transparent); overflow: hidden; margin-left: auto; }
+.toast .bar i { display: block; height: 100%; background: var(--inverse-text); width: 0; transition: width .15s; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* ------------------------------------------------------------ brand */
+.brand { display: flex; align-items: center; gap: 16px; font-size: 22px; font-weight: 400; color: var(--text); text-decoration: none; }
+.brand .logo { width: 32px; height: 32px; display: grid; place-items: center; color: var(--accent); }
+.brand .logo svg.i { width: 28px; height: 28px; stroke-width: 2; }
+a.brand:hover { text-decoration: none; }
+
+/* ------------------------------------------------------------ high contrast */
+@media (forced-colors: active) {
+  .switch span, .seg, .input, .btn, .menu, .card { border: 1px solid CanvasText; }
+  .switch input:checked + span { background: Highlight; }
+  .switch span::after { background: CanvasText; }
+  .switch input:checked + span::after { background: HighlightText; }
+  .seg button.on, .btn.active { background: Highlight; color: HighlightText; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges" fill="COLOR">
+  <!-- Toolbar glyph, hand-placed on the 16 px grid: viewfinder corners around a page. -->
+  <rect x="1" y="1" width="4" height="2"/><rect x="1" y="1" width="2" height="4"/>
+  <rect x="11" y="1" width="4" height="2"/><rect x="13" y="1" width="2" height="4"/>
+  <rect x="1" y="13" width="4" height="2"/><rect x="1" y="11" width="2" height="4"/>
+  <rect x="11" y="13" width="4" height="2"/><rect x="13" y="11" width="2" height="4"/>
+  <path fill-rule="evenodd" d="M5 4h4l2 2v6H5z M6 7h4v1H6z M6 9h4v1H6z"/>
+</svg>

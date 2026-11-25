@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- App icon (chrome://extensions, Web Store): the toolbar glyph on a neutral tile. -->
+  <rect x="5" y="5" width="118" height="118" rx="26" fill="#fff" stroke="#dadce0" stroke-width="2"/>
+  <path d="M24 44V32a8 8 0 0 1 8-8h12M84 24h12a8 8 0 0 1 8 8v12M104 84v12a8 8 0 0 1-8 8H84M44 104H32a8 8 0 0 1-8-8V84" fill="none" stroke="#1f1f1f" stroke-width="8" stroke-linecap="round"/>
+  <path fill="#1f1f1f" fill-rule="evenodd" d="M47 34h24l15 15v43a4 4 0 0 1-4 4H47a4 4 0 0 1-4-4V38a4 4 0 0 1 4-4z M70 37v13h13z M52 60h24v6H52z M52 72h24v6H52z M52 84h15v6H52z"/>
+</svg>

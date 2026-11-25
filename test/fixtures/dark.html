@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dark theme fixture</title>
+<style>
+  :root { --bg: #0b0f17; --panel: #151b26; --text: #e6e9ef; --muted: #8b93a1; --cyan: #22d3ee; --yellow: #facc15; --green: #86efac; --pink: #f9a8d4; --blue: #93c5fd; }
+  html { background: var(--bg); }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, sans-serif; }
+  header { position: sticky; top: 0; background: rgba(11, 15, 23, .9); border-bottom: 1px solid rgba(255,255,255,.12); padding: 12px 32px; display: flex; gap: 24px; align-items: center; z-index: 5; }
+  header a { color: var(--muted); text-decoration: none; }
+  header .logo { color: #fff; font-weight: 700; display: flex; gap: 8px; align-items: center; }
+  main { max-width: 960px; margin: 0 auto; padding: 0 32px 80px; }
+  .hero { position: relative; height: 420px; margin: 32px 0; border-radius: 16px; overflow: hidden; }
+  .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero .scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,0) 70%); }
+  .hero .copy { position: relative; padding: 48px; color: #fff; }
+  .hero h2 { font-size: 40px; margin: 0 0 8px; }
+  .bghero { height: 260px; border-radius: 16px; padding: 40px; color: #fff; background: linear-gradient(rgba(0,0,0,.3), rgba(0,0,0,.3)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect width="400" height="200" fill="%23233"/><circle cx="300" cy="60" r="90" fill="%23355"/></svg>') center / cover no-repeat; }
+  .grad { font-size: 56px; font-weight: 800; background: linear-gradient(90deg, #a5f3fc, #f0abfc 60%, #fde68a); -webkit-background-clip: text; background-clip: text; color: transparent; margin: 24px 0; }
+  .panel { background: var(--panel); border: 1px solid #2a3240; border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .white { color: #ffffff; }
+  .lightgrey { color: #c8ccd4; }
+  .grey { color: #9aa3b2; }
+  .cyan { color: var(--cyan); }
+  .yellow { color: var(--yellow); }
+  .green { color: var(--green); }
+  .pink { color: var(--pink); }
+  .lblue { color: var(--blue); }
+  .alpha { color: rgba(255, 255, 255, .55); }
+  .oklch { color: oklch(0.85 0.12 200); }
+  .faded { opacity: .6; color: #fff; }
+  .blend { mix-blend-mode: screen; color: #f5f5f5; }
+  a { color: #7dd3fc; }
+  a:visited { color: #c4b5fd; }
+  .tag::before { content: "NEW — "; color: #fde047; font-weight: 700; }
+  .note::after { content: " (light pseudo text)"; color: #cbd5e1; }
+  .stroke { font-size: 48px; font-weight: 900; color: transparent; -webkit-text-stroke: 1px #e2e8f0; }
+  ul.markers li::marker { color: #a7f3d0; }
+  input { background: #1f2633; color: #f1f5f9; border: 1px solid #334155; padding: 8px; border-radius: 6px; }
+  input::placeholder { color: #94a3b8; }
+  .btn { display: inline-block; background: #2563eb; color: #fff; padding: 10px 18px; border-radius: 8px; }
+  .divider { border-top: 1px solid rgba(255,255,255,.15); margin: 32px 0; }
+  .spacer { height: 1400px; }
+  .lazy-slot .card { padding: 20px; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; margin: 12px 0; }
+  .lazy-slot .card h3 { color: #f8fafc; }
+  .lazy-slot .card p { color: #a5b4fc; }
+  .lazy-slot .card .grad2 { font-size: 32px; font-weight: 800; background-image: linear-gradient(90deg, #fef08a, #bbf7d0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+</style>
+</head>
+<body>
+<header>
+  <span class="logo"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2 22 22H2z" fill="currentColor"/></svg>Nebula</span>
+  <a href="#a">Product</a><a href="#b">Pricing</a><a href="#c">Docs</a>
+</header>
+<main>
+  <h1 class="grad">Build faster in the dark</h1>
+  <p>This is the default body text in near-white on a near-black page. It must turn dark when backgrounds are removed.</p>
+  <p class="lightgrey">Light grey secondary text.</p>
+  <p class="grey">Mid grey muted text (#9aa3b2) — about 2.5:1 on white.</p>
+  <p class="cyan">Cyan accent text that should stay teal-ish.</p>
+  <p class="yellow">Yellow warning text that should stay yellow/amber-ish.</p>
+  <p class="green">Light green success text.</p>
+  <p class="pink">Pink highlight text.</p>
+  <p class="lblue">Light blue informational text.</p>
+  <p>Inline <a href="#x">a light-blue link</a> and <a href="#y">another link</a> inside default text.</p>
+  <p class="alpha">White text at 55% alpha (secondary).</p>
+  <p class="oklch">Text coloured with oklch(0.85 0.12 200).</p>
+  <p class="faded">Faded element (opacity .6) with white text.</p>
+  <p class="blend">Screen-blended near-white text.</p>
+  <p class="tag">Generated text before this sentence.</p>
+  <p class="note">A note with generated text after</p>
+  <div class="stroke">OUTLINE</div>
+  <ul class="markers"><li>List item one</li><li>List item two</li></ul>
+  <p><input placeholder="Placeholder text in slate" size="40"> <span class="btn">Get started</span></p>
+
+  <div class="panel">
+    <h2 class="white">Panel heading</h2>
+    <p class="grey">Panel body copy in muted grey. <a href="#z">Learn more →</a></p>
+    <svg width="320" height="60" viewBox="0 0 320 60" aria-label="chart">
+      <text x="0" y="20" fill="#e2e8f0" font-size="16">SVG label in light fill</text>
+      <circle cx="12" cy="44" r="8" fill="#ffffff"/>
+      <path d="M30 36h60v16H30z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+      <text x="110" y="50" fill="currentColor" font-size="14">currentColor svg text</text>
+    </svg>
+    <svg width="120" height="40" viewBox="0 0 120 40" aria-label="illustration">
+      <rect width="120" height="40" rx="6" fill="#1e3a8a"/>
+      <circle cx="20" cy="20" r="8" fill="#ffffff"/>
+      <text x="40" y="26" fill="#ffffff" font-size="14">badge</text>
+    </svg>
+  </div>
+
+  <section class="hero">
+    <img alt="" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='420'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23102040'/><stop offset='1' stop-color='%23402060'/></linearGradient></defs><rect width='800' height='420' fill='url(%23g)'/><circle cx='620' cy='120' r='160' fill='%23503070'/></svg>">
+    <div class="scrim"></div>
+    <div class="copy">
+      <h2>Light text over a photo</h2>
+      <p>This white copy sits on a kept image and should stay light.</p>
+    </div>
+  </section>
+  <div class="bghero"><h2>Background-image hero</h2><p>White text over a CSS url() background image.</p></div>
+
+  <div class="divider"></div>
+  <div class="spacer"><p class="lightgrey">Spacer section — keep scrolling.</p></div>
+  <div class="lazy-slot" id="lazy"></div>
+  <p class="cyan">End of page.</p>
+</main>
+<script>
+  // Lazy section: inserted once the user scrolls near it (like infinite feeds).
+  let done = false;
+  addEventListener('scroll', () => {
+    if (done || scrollY < 600) return;
+    done = true;
+    const slot = document.getElementById('lazy');
+    slot.innerHTML = [1, 2, 3].map(i => `<div class="card"><div class="grad2">Lazy gradient ${i}</div><h3>Lazy card ${i}</h3><p>Loaded after scrolling, in light indigo.</p></div>`).join('');
+  }, { passive: true });
+</script>
+</body>
+</html>
